@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    // "moduleResolution": "node",
+    "types": [
+      "element-plus/global"
+    ]
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
+}

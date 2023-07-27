@@ -1,0 +1,13 @@
+build/*.js
+src/assets
+public
+dist
+.idea
+.vscode
+.hbuilderx
+.history
+wxcomponents
+node_modules
+babel.config.js
+postcss.config.js
+src/components/uqrcode
