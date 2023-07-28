@@ -1,12 +1,17 @@
-import { createRouter,createWebHashHistory } from 'vue-router';
-import type {RouteRecordName} from 'vue-router';
-// import Main from '../views/main/main.vue';
+import LocalCache from '@/utils/cache';
 
+import { createRouter, createWebHashHistory } from 'vue-router';
+import type { RouteRecordName } from 'vue-router';
+// import Main from '../views/main/main.vue';
 const routes = [
   {
     path: '/',
-    name: 'Main',
-    component: () => import('../views/main/main.vue'),
+    redirect: '/main',
+  },
+  {
+    path: '/main',
+    name: 'main',
+    component: () => import('@/views/main/main.vue'),
   },
   {
     path: '/login',
@@ -14,26 +19,26 @@ const routes = [
     component: () => import('../views/login/login.vue'),
   },
   {
-    path: '/notFound',
+    // path: '/notFound',
+    path: '/:pathMatch(.*)*',
+
     name: 'notFound',
     component: () => import('../views/notfound/notfound.vue'),
   },
 ];
 const router = createRouter({
-  // TODO 在本地如果使用createWebHistory,会导致每次跳转路由vue项目都会重新加载,暂时不知道什么原因.使用 createWebHashHistory 没有这个问题
   // history: createWebHistory(import.meta.env.BASE_URL),
-    history: createWebHashHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 
 //路由守卫
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
+  console.log('进入路由守卫', to.path);
+  // debugger;
   const token = LocalCache.getCache('token');
-  console.log(token, to);
-  // 没有匹配到,进入404页面
-  if (to.matched.length === 0) {
-    return '/notFound';
-  }
+  const firstMenu = LocalCache.getCache('firstMenu');
+
   if (!token) {
     // 没有权限
     if (to.path !== '/login') {
@@ -43,16 +48,20 @@ router.beforeEach((to) => {
     if (to.path == '/login') {
       return '/';
     }
+
+    if (to.path == '/main') {
+      return firstMenu.url;
+    }
   }
 });
 // 重置路由
- export const resetRouter = () => {
-   const routes = router.getRoutes();
-   routes.forEach((item) => {
-     if (!['Main', 'login','notFound'].includes(item.name as string)) {
-       router.removeRoute(item.name as RouteRecordName);
-     }
-   });
-   // console.log(newRouter);
- };
+export const resetRouter = () => {
+  const routes = router.getRoutes();
+  routes.forEach((item) => {
+    if (!['main', 'login', 'notFound'].includes(item.name as string)) {
+      router.removeRoute(item.name as RouteRecordName);
+    }
+  });
+  // console.log(newRouter);
+};
 export default router;

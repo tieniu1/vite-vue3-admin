@@ -1,4 +1,4 @@
-import router,{resetRouter} from '@/router';
+import router, { resetRouter } from '@/router';
 import { accountLoginRequest, getUsers } from '@/service/login/login';
 import type { IAccount } from '@/service/login/types';
 import type { IUserInfo, objArray } from '@/stores/login/types';
@@ -31,7 +31,9 @@ export const useLoginStore = defineStore('login', () => {
       token.value = tokenStr;
       LocalCache.setCache('token', tokenStr);
       // 请求用户信息,获取权限,设置菜单和权限按扭
-      getUserInfo();
+      await getUserInfo();
+      // 跳转到main
+      router.push('/main');
     } catch (error) {
       console.log(error);
 
@@ -47,21 +49,23 @@ export const useLoginStore = defineStore('login', () => {
    * @return {*}
    */
   const getUserInfo = async (payload?: any) => {
-    // 没有token不能获取用户信息
-    if (!token.value) return;
-    // 获取用户信息
-    const userInfoResult = await getUsers();
-    userInfo.value = userInfoResult.body;
-    LocalCache.setCache('edurpUserInfo', userInfo);
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      // 没有token不能获取用户信息
+      if (!token.value) return;
+      // 获取用户信息
+      const userInfoResult = await getUsers();
+      userInfo.value = userInfoResult.body;
+      LocalCache.setCache('edurpUserInfo', userInfo);
 
-    // 格式化权限列表 动态添加路由
-    changeUserMenus(userInfo.value.permissions);
+      // 格式化权限列表 动态添加路由
+      changeUserMenus(userInfo.value.permissions);
 
-    // 存储后台返回的权限列表
-    LocalCache.setCache('rawPermissions', userInfo.value.permissions);
-    rawPermissions.value = userInfo.value.permissions;
-    // 跳转到main
-    router.replace('/');
+      // 存储后台返回的权限列表
+      LocalCache.setCache('rawPermissions', userInfo.value.permissions);
+      rawPermissions.value = userInfo.value.permissions;
+      resolve(undefined);
+    });
   };
 
   /**
@@ -75,23 +79,27 @@ export const useLoginStore = defineStore('login', () => {
     // 动态注册路由
     const { routes, buttonPermissions, firstMenu } = mapMenusToRoutes(userMenus);
     for (const route of routes) {
-      router.addRoute(route);
+      // 把路由注册为main的的子路由,动态加载的路由都会在main.vue的router-view展示
+      router.addRoute('main', route);
     }
+    LocalCache.setCache('firstMenu', firstMenu);
 
-    console.log('动态注册路由routes-----', routes);
-    console.log('获取全部routes----', router.getRoutes());
+    // console.log('动态注册路由routes-----', routes);
+    // console.log('获取全部routes----', router.getRoutes());
 
     btnPermissions.value = buttonPermissions;
   };
   // 数据持久化
-  const setupStore = () => {
-    const localToken = LocalCache.getCache('token');
-    console.log('执行了吗');
-
-    if (localToken) {
-      token.value = localToken;
-      getUserInfo();
-    }
+  const setupStore = async () => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      const localToken = LocalCache.getCache('token');
+      if (localToken) {
+        token.value = localToken;
+        await getUserInfo();
+      }
+      resolve(undefined);
+    });
   };
   // 退出登陆
   const logOutFn = () => {

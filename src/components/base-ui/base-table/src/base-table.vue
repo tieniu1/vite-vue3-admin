@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>courseManage.vue</h1>
+    <h1>base-table</h1>
   </div>
 </template>
 <script lang="ts" setup></script>

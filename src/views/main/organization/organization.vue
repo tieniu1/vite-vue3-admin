@@ -1,12 +1,10 @@
 <template>
   <div>
-    <h1>organization.vue</h1>
-    <h1>count</h1>
+    <pageContent></pageContent>
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import { ref } from 'vue';
-
-const count = ref('1');
+import pageContent from '@/components/page-content';
 </script>
 <style lang="less" scoped></style>

@@ -1,24 +1,52 @@
+// {
+//   "extends": "@vue/tsconfig/tsconfig.dom.json",
+//   "include": [
+//     "env.d.ts",
+//     "src/*.ts",
+//     "src/**/*",
+//     "src/**/*.ts",
+//     "src/**/*.vue",
+//     "src/**/**/*.ts",
+//   ],
+//   "exclude": [
+//     "src/**/__tests__/*"
+//   ],
+//   "compilerOptions": {
+//     "composite": true,
+//     "moduleResolution": "node",
+//     "baseUrl": "./",
+//     "paths": {
+//       "@/*": [
+//         "./src/*"
+//       ]
+//     }
+//   }
+// }
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": [
+    "app.d.ts",
     "env.d.ts",
-    "src/*.ts",
     "src/**/*",
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "src/**/**/*.ts",
-  ],
-  "exclude": [
-    "src/**/__tests__/*"
+    "src/**/*.vue"
   ],
   "compilerOptions": {
-    "composite": true,
-    "moduleResolution": "node",
-    "baseUrl": "./",
+    "isolatedModules": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
       ]
+    },
+    "types": [
+      "element-plus/global",
+      "node",
+      "vite/client"
+    ]
+  },
+  "referencestsconfig.app.json": [
+    {
+      "path": "./tsconfig.config.json"
     }
-  }
+  ]
 }
